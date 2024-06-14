@@ -11,11 +11,17 @@ with open(r"E:\Kachori\GenAI_Proposals_OpenAI\data.json", 'r') as file:
     data = json.load(file)
 
 # Prepare the data for fine-tuning
+# Prepare the data for fine-tuning in the chat format
 train_data = []
 for item in data:
     job_description = item['job_description']['description']
     proposal = item['proposal']['introduction'] + " " + item['proposal']['experience'] + " " + " ".join(item['proposal']['solutions_implemented']) + " " + item['proposal']['conclusion']
-    train_data.append({"prompt": job_description, "completion": proposal})
+    train_data.append({
+        "messages": [
+            {"role": "user", "content": job_description},
+            {"role": "assistant", "content": proposal}
+        ]
+    })
 
 # Save the training data in a new JSONL file
 with open(r"E:\Kachori\GenAI_Proposals_OpenAI\prepared_data.jsonl", 'w') as file:
@@ -31,10 +37,10 @@ with open(r"E:\Kachori\GenAI_Proposals_OpenAI\prepared_data.jsonl", "rb") as f:
     response = openai.files.create(file=f, purpose='fine-tune')
 # Print response to understand its structure
 
-# print("File upload response:", response)
+print("File upload response:", response)
 
 # Get file_id from response
-file_id = "file-8pUJagW2Nm4WCxul8CCtCBC8"
+file_id = "file-QDf1vx1COhmmvqIJWwTjvEGO"
 # if not file_id:
 #     raise ValueError("Failed to upload file to OpenAI")
 
